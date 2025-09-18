@@ -3,13 +3,21 @@ from tkinter import filedialog
 from tkinter import messagebox
 import os
 import pygame as pg
+<<<<<<< HEAD
 from mutagen.mp3 import MP3  # Importer pour récupérer la durée d'un MP3
+=======
+from mutagen.mp3 import MP3
+>>>>>>> 1fd7874 (ajout readme et modif lecteur)
 
 path = ""
 enpause = True
 Listechanson = []
 index_chan = 0
+<<<<<<< HEAD
 temps_total = 0  # Durée totale de la chanson
+=======
+temps_total = 0
+>>>>>>> 1fd7874 (ajout readme et modif lecteur)
 
 def choisir_fichier():
     global path, Listechanson, index_chan, temps_total
@@ -22,10 +30,16 @@ def choisir_fichier():
         nom_fichier = path.split("/")[-1]  
         texte.config(text=f"Choisi : {nom_fichier}")
 
+<<<<<<< HEAD
         # Obtenir la durée du MP3 avec mutagen
         audio = MP3(path)
         global temps_total
         temps_total = audio.info.length  # Durée en secondes
+=======
+        audio = MP3(path)
+        global temps_total
+        temps_total = audio.info.length
+>>>>>>> 1fd7874 (ajout readme et modif lecteur)
 
 def jouer_musique():
     global enpause, path, temps_total
@@ -34,12 +48,16 @@ def jouer_musique():
         pg.mixer.music.load(path)
         pg.mixer.music.play()
 
+<<<<<<< HEAD
         # Attendre un peu pour s'assurer que la musique commence à jouer avant de récupérer la durée
+=======
+>>>>>>> 1fd7874 (ajout readme et modif lecteur)
         lecteur.after(1000, obtenir_temps_total)
 
 def obtenir_temps_total():
     global temps_total
     if pg.mixer.music.get_busy():
+<<<<<<< HEAD
         # La musique joue, récupérons la durée totale
         texte.config(text=f"Musique en cours de lecture : {os.path.basename(path)}")
         barre_temp.config(to=temps_total)  # Met à jour la barre de progression
@@ -51,6 +69,18 @@ def mise_a_jour_barre():
         barre_temp.set(temps_ecoule)  # Met à jour la barre de progression
     if not enpause and pg.mixer.music.get_busy():  # Si la musique est en cours de lecture
         lecteur.after(1000, mise_a_jour_barre)  # Vérifie toutes les secondes
+=======
+        texte.config(text=f"Musique en cours de lecture : {os.path.basename(path)}")
+        barre_temp.config(to=temps_total)
+        mise_a_jour_barre()
+
+def mise_a_jour_barre():
+    if pg.mixer.music.get_busy():
+        temps_ecoule = pg.mixer.music.get_pos() / 1000
+        barre_temp.set(temps_ecoule)
+    if not enpause and pg.mixer.music.get_busy():
+        lecteur.after(1000, mise_a_jour_barre)
+>>>>>>> 1fd7874 (ajout readme et modif lecteur)
 
 def suivante():
     global index_chan, path
@@ -81,6 +111,7 @@ def volume(valeur):
     vol = float(valeur) / 100
     pg.mixer.music.set_volume(vol)
 
+<<<<<<< HEAD
 # Fonction pour gérer le clic sur la barre de temps
 def clic_barre_temps(event):
     if temps_total > 0:
@@ -97,6 +128,21 @@ def verifier_fin_musique():
         suivante()  # Passer à la chanson suivante
     else:
         lecteur.after(1000, verifier_fin_musique)  # Vérifier chaque seconde si la musique est terminée
+=======
+def clic_barre_temps(event):
+    if temps_total > 0:
+        position = event.x
+        proportion = position / barre_temp.winfo_width()
+        nouvelle_position = proportion * temps_total
+        pg.mixer.music.set_pos(nouvelle_position)
+        mise_a_jour_barre()
+
+def verifier_fin_musique():
+    if not pg.mixer.music.get_busy():
+        suivante()
+    else:
+        lecteur.after(1000, verifier_fin_musique)
+>>>>>>> 1fd7874 (ajout readme et modif lecteur)
 
 #-----------------------------------------------------------------------
 
