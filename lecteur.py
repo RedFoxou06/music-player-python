@@ -3,21 +3,13 @@ from tkinter import filedialog
 from tkinter import messagebox
 import os
 import pygame as pg
-<<<<<<< HEAD
-from mutagen.mp3 import MP3  # Importer pour récupérer la durée d'un MP3
-=======
-from mutagen.mp3 import MP3
->>>>>>> 1fd7874 (ajout readme et modif lecteur)
+from mutagen.mp3 import MP3  
 
 path = ""
 enpause = True
 Listechanson = []
 index_chan = 0
-<<<<<<< HEAD
-temps_total = 0  # Durée totale de la chanson
-=======
-temps_total = 0
->>>>>>> 1fd7874 (ajout readme et modif lecteur)
+temps_total = 0 
 
 def choisir_fichier():
     global path, Listechanson, index_chan, temps_total
@@ -30,16 +22,8 @@ def choisir_fichier():
         nom_fichier = path.split("/")[-1]  
         texte.config(text=f"Choisi : {nom_fichier}")
 
-<<<<<<< HEAD
-        # Obtenir la durée du MP3 avec mutagen
         audio = MP3(path)
-        global temps_total
-        temps_total = audio.info.length  # Durée en secondes
-=======
-        audio = MP3(path)
-        global temps_total
-        temps_total = audio.info.length
->>>>>>> 1fd7874 (ajout readme et modif lecteur)
+        temps_total = audio.info.length 
 
 def jouer_musique():
     global enpause, path, temps_total
@@ -48,50 +32,38 @@ def jouer_musique():
         pg.mixer.music.load(path)
         pg.mixer.music.play()
 
-<<<<<<< HEAD
-        # Attendre un peu pour s'assurer que la musique commence à jouer avant de récupérer la durée
-=======
->>>>>>> 1fd7874 (ajout readme et modif lecteur)
         lecteur.after(1000, obtenir_temps_total)
 
 def obtenir_temps_total():
     global temps_total
     if pg.mixer.music.get_busy():
-<<<<<<< HEAD
-        # La musique joue, récupérons la durée totale
         texte.config(text=f"Musique en cours de lecture : {os.path.basename(path)}")
-        barre_temp.config(to=temps_total)  # Met à jour la barre de progression
-        mise_a_jour_barre()  # Lance la mise à jour de la barre de progression
+        barre_temp.config(to=temps_total) 
+        mise_a_jour_barre()  
 
 def mise_a_jour_barre():
     if pg.mixer.music.get_busy():
-        temps_ecoule = pg.mixer.music.get_pos() / 1000  # Obtenir le temps écoulé en secondes
-        barre_temp.set(temps_ecoule)  # Met à jour la barre de progression
-    if not enpause and pg.mixer.music.get_busy():  # Si la musique est en cours de lecture
-        lecteur.after(1000, mise_a_jour_barre)  # Vérifie toutes les secondes
-=======
-        texte.config(text=f"Musique en cours de lecture : {os.path.basename(path)}")
-        barre_temp.config(to=temps_total)
-        mise_a_jour_barre()
-
-def mise_a_jour_barre():
-    if pg.mixer.music.get_busy():
-        temps_ecoule = pg.mixer.music.get_pos() / 1000
-        barre_temp.set(temps_ecoule)
-    if not enpause and pg.mixer.music.get_busy():
-        lecteur.after(1000, mise_a_jour_barre)
->>>>>>> 1fd7874 (ajout readme et modif lecteur)
+        temps_ecoule = pg.mixer.music.get_pos() / 1000 
+        barre_temp.set(temps_ecoule) 
+    if not enpause and pg.mixer.music.get_busy(): 
+        lecteur.after(1000, mise_a_jour_barre)  
 
 def suivante():
     global index_chan, path
     index_chan += 1
     if index_chan < len(Listechanson):
         path = Listechanson[index_chan]
+        try:
+            audio = MP3(path)
+            global temps_total
+            temps_total = audio.info.length
+        except:
+            pass
         jouer_musique()
     else:
         texte.config(text="Fin de la playlist")
 
-def pause():
+def basculer_pause():
     global enpause
     if enpause:
         pg.mixer.music.unpause()
@@ -111,70 +83,48 @@ def volume(valeur):
     vol = float(valeur) / 100
     pg.mixer.music.set_volume(vol)
 
-<<<<<<< HEAD
-# Fonction pour gérer le clic sur la barre de temps
 def clic_barre_temps(event):
     if temps_total > 0:
-        # Calculer la position cliquée par rapport à la largeur de la barre de temps
-        position = event.x  # Position du clic dans la barre
-        proportion = position / barre_temp.winfo_width()  # Proportion de la barre
-        nouvelle_position = proportion * temps_total  # Convertir la proportion en secondes
-        pg.mixer.music.set_pos(nouvelle_position)  # Avancer la musique à la position cliquée
-        mise_a_jour_barre()  # Mettre à jour la barre après le changement de position
-
-# Fonction pour vérifier si la musique est terminée
-def verifier_fin_musique():
-    if not pg.mixer.music.get_busy():  # Si la musique est terminée
-        suivante()  # Passer à la chanson suivante
-    else:
-        lecteur.after(1000, verifier_fin_musique)  # Vérifier chaque seconde si la musique est terminée
-=======
-def clic_barre_temps(event):
-    if temps_total > 0:
-        position = event.x
-        proportion = position / barre_temp.winfo_width()
-        nouvelle_position = proportion * temps_total
+        position = event.x 
+        proportion = position / barre_temp.winfo_width()  
+        nouvelle_position = proportion * temps_total 
         pg.mixer.music.set_pos(nouvelle_position)
-        mise_a_jour_barre()
+        mise_a_jour_barre()  
 
 def verifier_fin_musique():
-    if not pg.mixer.music.get_busy():
-        suivante()
+    if not enpause and path and not pg.mixer.music.get_busy(): 
+        suivante() 
     else:
-        lecteur.after(1000, verifier_fin_musique)
->>>>>>> 1fd7874 (ajout readme et modif lecteur)
+        lecteur.after(1000, verifier_fin_musique)  
 
-#-----------------------------------------------------------------------
-
-lecteur = tk.Tk()  # Crée la fenêtre
+lecteur = tk.Tk()  
 pg.mixer.init()
 
-lecteur.title("Lecteur mp3")  # Titre
-texte = tk.Label(lecteur, text="Aucun fichier sélectionné")  # Texte dans une variable
-texte.pack(pady=10)  # On l'envoie sur la fenêtre
+lecteur.title("Lecteur mp3")  
+texte = tk.Label(lecteur, text="Aucun fichier sélectionné") 
+texte.pack(pady=10)  
 
-choisir = tk.Button(lecteur, text="Choisir", command=choisir_fichier)  # Bouton pour choisir
+choisir = tk.Button(lecteur, text="Choisir", command=choisir_fichier)
 choisir.pack(pady=10)
 
-jouer = tk.Button(lecteur, text="Jouer", command=jouer_musique)  # Bouton pour jouer
+jouer = tk.Button(lecteur, text="Jouer", command=jouer_musique) 
 jouer.pack(pady=10)
 
-pause = tk.Button(lecteur, text="Pause/Reprendre", command=pause)  # Bouton pour mettre en pause
+pause = tk.Button(lecteur, text="Pause/Reprendre", command=basculer_pause) 
 pause.pack(pady=10)
 
-quitter = tk.Button(lecteur, text="Quitter", command=confirmer_quitter)  # Bouton pour quitter
+quitter = tk.Button(lecteur, text="Quitter", command=confirmer_quitter)  
 quitter.pack(pady=10)
 
 barre_vol = tk.Scale(lecteur, from_=0, to=100, orient=tk.HORIZONTAL, label="Volume", command=volume)
-barre_vol.set(50)  # Volume par défaut à 50%
+barre_vol.set(50)  
 barre_vol.pack(pady=10)
 
 barre_temp = tk.Scale(lecteur, from_=0, to=180, orient=tk.HORIZONTAL, label="Temps", length=300)
 barre_temp.pack(pady=10)
 
-barre_temp.bind("<Button-1>", clic_barre_temps)  # Lier l'événement de clic à la fonction
+barre_temp.bind("<Button-1>", clic_barre_temps)  
 
-# Vérifier si la musique est terminée
 verifier_fin_musique()
 
 lecteur.mainloop()
